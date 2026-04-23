@@ -275,22 +275,6 @@ footer .footer-logo { width: 34px; height: 34px; margin-bottom: 1rem; }
   transform: translateY(0);
 }
 
-/* Custom cursor */
-.cursor-dot, .cursor-ring {
-  position: fixed; top: 0; left: 0;
-  pointer-events: none; z-index: 10000;
-  border-radius: 50%; mix-blend-mode: difference; will-change: transform;
-}
-.cursor-dot { width: 6px; height: 6px; background: #fff; transform: translate(-50%,-50%); }
-.cursor-ring {
-  width: 36px; height: 36px; border: 1.5px solid rgba(255,255,255,0.6);
-  transform: translate(-50%,-50%);
-  transition: width 0.25s, height 0.25s, border-color 0.25s, background 0.25s;
-}
-.cursor-ring.hover { width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.9); }
-@media (pointer: coarse) { .cursor-dot, .cursor-ring { display: none; } }
-body, a, button { cursor: none; }
-@media (pointer: coarse) { body, a, button { cursor: auto; } }
 
 /* DIVIDERS — self-drawing SVG lines between sections */
 .divider {

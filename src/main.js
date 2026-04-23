@@ -416,29 +416,6 @@ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 
 } // end prefers-reduced-motion guard
 
-// ─── CUSTOM CURSOR ───────────────────────────────────────────────────────────
-if (window.matchMedia('(pointer: fine)').matches) {
-  const dot = document.getElementById('cursor-dot');
-  const ring = document.getElementById('cursor-ring');
-  let mx = 0, my = 0, rx = 0, ry = 0;
-
-  window.addEventListener('mousemove', (e) => {
-    mx = e.clientX; my = e.clientY;
-    dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
-  });
-
-  (function loop() {
-    rx += (mx - rx) * 0.18;
-    ry += (my - ry) * 0.18;
-    ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
-    requestAnimationFrame(loop);
-  })();
-
-  document.querySelectorAll('a, button, .faq-question, .pillar').forEach((el) => {
-    el.addEventListener('mouseenter', () => ring.classList.add('hover'));
-    el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
-  });
-}
 
 // ─── MAGNETIC BUTTONS ────────────────────────────────────────────────────────
 if (window.matchMedia('(pointer: fine)').matches) {
