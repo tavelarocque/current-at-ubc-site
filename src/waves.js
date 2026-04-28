@@ -31,7 +31,7 @@ export function initWaves(container) {
     lines = [];
 
     const { width, height } = bounding;
-    const xGap = 8;
+    const xGap = 11;
     const yGap = 8;
     const oWidth = width + 200;
     const oHeight = height + 30;
@@ -153,6 +153,14 @@ export function initWaves(container) {
 
   setSize();
   setLines();
+
+  let visible = true;
+  const observer = new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting;
+    if (visible && !rafId) rafId = requestAnimationFrame(tick);
+    if (!visible && rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  });
+  observer.observe(container);
   rafId = requestAnimationFrame(tick);
 
   window.addEventListener('mousemove', onMouseMove);
@@ -160,6 +168,7 @@ export function initWaves(container) {
 
   return () => {
     cancelAnimationFrame(rafId);
+    observer.disconnect();
     window.removeEventListener('mousemove', onMouseMove);
     window.removeEventListener('resize', onResize);
   };

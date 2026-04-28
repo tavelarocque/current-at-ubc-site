@@ -30,7 +30,8 @@ nav {
   padding: 1.25rem 2rem; display: flex; justify-content: space-between; align-items: center;
   transition: background 0.3s, box-shadow 0.3s;
 }
-nav.scrolled { background: rgba(255,255,255,0.96); backdrop-filter: blur(12px); box-shadow: 0 1px 12px rgba(26,58,92,0.08); }
+nav.scrolled { background: rgba(255,255,255,0.97); box-shadow: 0 1px 12px rgba(26,58,92,0.08); }
+@media (pointer: fine) { nav.scrolled { background: rgba(255,255,255,0.96); backdrop-filter: blur(12px); } }
 nav.scrolled .nav-logo span { color: var(--navy); }
 nav.scrolled .nav-logo img { filter: none !important; opacity: 1 !important; }
 nav.scrolled .nav-cta { background: var(--navy); color: white; }
