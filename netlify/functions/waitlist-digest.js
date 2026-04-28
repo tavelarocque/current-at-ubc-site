@@ -29,7 +29,7 @@ export const handler = async () => {
         hasSite: !!siteId,
         hasWebhook: !!webhook,
       });
-      return { statusCode: 500, body: "missing config" };
+      return { statusCode: 500, body: "internal error" };
     }
 
     // 1. Fetch forms on the site.
@@ -40,13 +40,13 @@ export const handler = async () => {
     if (!formsRes.ok) {
       const t = await formsRes.text();
       console.error("Netlify forms fetch failed", formsRes.status, t);
-      return { statusCode: 502, body: "forms fetch failed" };
+      return { statusCode: 502, body: "internal error" };
     }
     const forms = await formsRes.json();
     const waitlist = forms.find((f) => f.name === "waitlist");
     if (!waitlist) {
       console.error("No waitlist form found on site");
-      return { statusCode: 404, body: "waitlist form not found" };
+      return { statusCode: 404, body: "internal error" };
     }
 
     const total = waitlist.submission_count ?? 0;
@@ -115,13 +115,13 @@ export const handler = async () => {
     if (!slackRes.ok) {
       const t = await slackRes.text();
       console.error("Slack post failed", slackRes.status, t);
-      return { statusCode: 502, body: "slack post failed" };
+      return { statusCode: 502, body: "internal error" };
     }
 
     return { statusCode: 200, body: "ok" };
   } catch (err) {
     console.error("waitlist-digest error", err);
-    return { statusCode: 500, body: "handler error" };
+    return { statusCode: 500, body: "internal error" };
   }
 };
 

@@ -4,6 +4,22 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
+// ─── COUNTDOWN TIMER ─────────────────────────────────────────────────────────
+const cdDays = document.getElementById('cd-days');
+if (cdDays) {
+  const target = new Date('2026-10-22T09:00:00-07:00').getTime();
+  const pad = (n) => (n < 10 ? '0' + n : String(n));
+  function tick() {
+    let diff = Math.max(0, target - Date.now());
+    cdDays.textContent = Math.floor(diff / 864e5);
+    document.getElementById('cd-hrs').textContent = pad(Math.floor((diff % 864e5) / 36e5));
+    document.getElementById('cd-min').textContent = pad(Math.floor((diff % 36e5) / 6e4));
+    document.getElementById('cd-sec').textContent = pad(Math.floor((diff % 6e4) / 1e3));
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
 // ─── WAVE ANIMATION ──────────────────────────────────────────────────────────
 const hero = document.querySelector('.hero');
 if (hero) initWaves(hero);
@@ -28,33 +44,61 @@ if (heroEl && window.matchMedia('(pointer: fine)').matches) {
   heroEl.appendChild(spotlight);
 
   let spotX = 0, spotY = 0, curX = 0, curY = 0;
+  let spotRaf = null;
+
+  function spotLoop() {
+    spotX += (curX - spotX) * 0.08;
+    spotY += (curY - spotY) * 0.08;
+    spotlight.style.transform = `translate(${spotX}px, ${spotY}px)`;
+    if (Math.abs(curX - spotX) > 0.5 || Math.abs(curY - spotY) > 0.5) {
+      spotRaf = requestAnimationFrame(spotLoop);
+    } else {
+      spotRaf = null;
+    }
+  }
+
   heroEl.addEventListener('mousemove', (e) => {
     const rect = heroEl.getBoundingClientRect();
     curX = e.clientX - rect.left;
     curY = e.clientY - rect.top;
+    if (!spotRaf) spotRaf = requestAnimationFrame(spotLoop);
   });
-
-  (function raf() {
-    spotX += (curX - spotX) * 0.08;
-    spotY += (curY - spotY) * 0.08;
-    spotlight.style.transform = `translate(${spotX}px, ${spotY}px)`;
-    requestAnimationFrame(raf);
-  })();
 }
 
 // ─── WAITLIST FORM ───────────────────────────────────────────────────────────
 const waitlistForm = document.getElementById('waitlist-form');
 if (waitlistForm) {
+  const submitBtn = waitlistForm.querySelector('button[type="submit"]');
   waitlistForm.addEventListener('submit', function (e) {
     e.preventDefault();
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+    }
     const formData = new FormData(this);
     fetch('/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams(formData).toString(),
     })
-      .then(() => { window.location.href = '/thank-you'; })
-      .catch(() => { window.location.href = '/thank-you'; });
+      .then((res) => {
+        if (!res.ok) throw new Error(res.status);
+        window.location.href = '/thank-you';
+      })
+      .catch(() => {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Join Waitlist';
+        }
+        let err = waitlistForm.querySelector('.form-error');
+        if (!err) {
+          err = document.createElement('p');
+          err.className = 'form-error';
+          err.style.cssText = 'color:#f87171;font-size:0.85rem;margin-top:0.75rem;';
+          waitlistForm.appendChild(err);
+        }
+        err.textContent = 'Something went wrong. Please try again.';
+      });
   });
 }
 
@@ -190,9 +234,18 @@ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     el.classList.remove('fade-up');
     gsap.set(el, { opacity: 1 });
     const words = el.textContent.split(/\s+/).filter(Boolean);
-    el.innerHTML = words
-      .map((w) => `<span style="display:inline-block;overflow:hidden;vertical-align:top"><span class="mask-word" style="display:inline-block">${w}</span></span>`)
-      .join(' ');
+    el.textContent = '';
+    words.forEach((w, i) => {
+      if (i > 0) el.append(' ');
+      const outer = document.createElement('span');
+      outer.style.cssText = 'display:inline-block;overflow:hidden;vertical-align:top';
+      const inner = document.createElement('span');
+      inner.className = 'mask-word';
+      inner.style.display = 'inline-block';
+      inner.textContent = w;
+      outer.appendChild(inner);
+      el.appendChild(outer);
+    });
     gsap.fromTo(
       el.querySelectorAll('.mask-word'),
       { yPercent: 110 },
@@ -265,9 +318,19 @@ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     // Body — word-wrap clip-path reveal
     if (aboutBody) {
       const words = aboutBody.textContent.split(/\s+/).filter(Boolean);
-      aboutBody.innerHTML = words
-        .map((w) => `<span class="word-wrap" style="display:inline-block;overflow:hidden"><span class="word" style="display:inline-block">${w}</span></span>`)
-        .join(' ');
+      aboutBody.textContent = '';
+      words.forEach((w, i) => {
+        if (i > 0) aboutBody.append(' ');
+        const outer = document.createElement('span');
+        outer.className = 'word-wrap';
+        outer.style.cssText = 'display:inline-block;overflow:hidden';
+        const inner = document.createElement('span');
+        inner.className = 'word';
+        inner.style.display = 'inline-block';
+        inner.textContent = w;
+        outer.appendChild(inner);
+        aboutBody.appendChild(outer);
+      });
       gsap.fromTo(
         aboutBody.querySelectorAll('.word'),
         { clipPath: 'inset(0 0 100% 0)', y: 12 },

@@ -26,7 +26,7 @@ export const handler = async (event) => {
     const webhook = process.env.SLACK_WEBHOOK_URL;
     if (!webhook) {
       console.error("SLACK_WEBHOOK_URL env var not set");
-      return { statusCode: 500, body: "missing webhook" };
+      return { statusCode: 500, body: "internal error" };
     }
 
     const slackBody = {
@@ -39,8 +39,8 @@ export const handler = async (event) => {
         {
           type: "section",
           fields: [
-            { type: "mrkdwn", text: `*Email*\n${email}` },
-            { type: "mrkdwn", text: `*When*\n${submittedAt}` },
+            { type: "plain_text", text: `Email: ${email}` },
+            { type: "plain_text", text: `When: ${submittedAt}` },
           ],
         },
         {
@@ -61,12 +61,12 @@ export const handler = async (event) => {
     if (!res.ok) {
       const text = await res.text();
       console.error("Slack webhook failed", res.status, text);
-      return { statusCode: 502, body: `slack post failed: ${res.status}` };
+      return { statusCode: 502, body: "internal error" };
     }
 
     return { statusCode: 200, body: "ok" };
   } catch (err) {
     console.error("submission-created handler error", err);
-    return { statusCode: 500, body: "handler error" };
+    return { statusCode: 500, body: "internal error" };
   }
 };
