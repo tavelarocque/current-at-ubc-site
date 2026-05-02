@@ -7,7 +7,7 @@ gsap.registerPlugin(ScrollTrigger);
 // ─── COUNTDOWN TIMER ─────────────────────────────────────────────────────────
 const cdDays = document.getElementById('cd-days');
 if (cdDays) {
-  const target = new Date('2026-10-22T09:00:00-07:00').getTime();
+  const target = new Date('2026-10-21T09:00:00-07:00').getTime();
   const pad = (n) => (n < 10 ? '0' + n : String(n));
   function tick() {
     let diff = Math.max(0, target - Date.now());
