@@ -46,7 +46,7 @@ The production website + full automation backend powering registration, sponsor 
 
 ## Status
 
-🟢 **Live and accepting registrations for October 22, 2026 launch event**
+🟢 **Live and accepting registrations for October 21, 2026 launch event**
 
 ---
 
